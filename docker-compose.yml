@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+    mysql:
+        build: ./docker/mysql/
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: prova123
+        ports:
+            - "3306:3306"
+        networks:
+            - project_network
+    phpmyadmin:
+        image: phpmyadmin:latest
+        restart: always
+        ports:
+            - "8080:80"
+        environment:
+            PMA_HOST: mysql
+            MYSQL_ROOT_PASSWORD: prova123
+        networks:
+            - project_network
+networks:
+    project_network:
+        driver: bridge

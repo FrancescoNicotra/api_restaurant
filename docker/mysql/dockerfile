@@ -1,0 +1,7 @@
+FROM mysql:8.2.0
+
+# Copia un file SQL contenente i comandi per cambiare la password di root
+COPY db.sql /docker-entrypoint-initdb.d/
+
+# Avvia MySQL
+CMD ["mysqld"]

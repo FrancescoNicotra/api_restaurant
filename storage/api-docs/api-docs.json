@@ -233,14 +233,14 @@
                 }
             }
         },
-        "/api/prenotazione/resturant/reservation": {
+        "/api/prenotazione/restaurant/reservation": {
             "post": {
                 "tags": [
                     "Prenotazione"
                 ],
                 "summary": "Get all reservations of a restaurant",
                 "description": "Retrieve details of all reservations made at a specific restaurant",
-                "operationId": "6bb0b2a53f6cc04c2c2ab5dd70f2d591",
+                "operationId": "8094b65b96524bd5ce5eb13ada6c2275",
                 "requestBody": {
                     "description": "Restaurant details",
                     "required": true,
@@ -423,10 +423,10 @@
         "/api/ristorante": {
             "get": {
                 "tags": [
-                    "Resturant"
+                    "restaurant"
                 ],
-                "summary": "Get all resturants",
-                "description": "Retrieve a list of all resturants",
+                "summary": "Get all restaurants",
+                "description": "Retrieve a list of all restaurants",
                 "operationId": "fd563b4904835dcd5949197e64af7ef9",
                 "responses": {
                     "200": {
@@ -471,11 +471,11 @@
             },
             "put": {
                 "tags": [
-                    "Resturant"
+                    "restaurant"
                 ],
                 "summary": "Update restaurant details",
                 "description": "Update restaurant details, including name, address, cuisine type, and seating capacity",
-                "operationId": "830e087cce180c462750ae9afbdfe16d",
+                "operationId": "fbfc1263bb073b054f84fc7f0dacb2fa",
                 "requestBody": {
                     "description": "Restaurant details for update",
                     "required": true,
@@ -566,13 +566,13 @@
             },
             "post": {
                 "tags": [
-                    "Resturant"
+                    "restaurant"
                 ],
-                "summary": "Create a new resturant",
-                "description": "Create a new resturant",
-                "operationId": "createResturant",
+                "summary": "Create a new restaurant",
+                "description": "Create a new restaurant",
+                "operationId": "createrestaurant",
                 "requestBody": {
-                    "description": "Create a new resturant",
+                    "description": "Create a new restaurant",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -663,11 +663,11 @@
             },
             "delete": {
                 "tags": [
-                    "Resturant"
+                    "restaurant"
                 ],
                 "summary": "Delete restaurant",
                 "description": "Delete a restaurant based on the name and address",
-                "operationId": "8ec86b969a8b6f33b051224ddf0a0dc6",
+                "operationId": "7446f0f5bc5d395662f48932853cded3",
                 "requestBody": {
                     "description": "Restaurant details for deletion",
                     "required": true,
@@ -740,16 +740,16 @@
         "/api/ristorante/{regione_sociale}": {
             "get": {
                 "tags": [
-                    "Resturant"
+                    "restaurant"
                 ],
-                "summary": "Get all resturants by name",
-                "description": "Retrieve a list of all resturants by name",
-                "operationId": "91d45c03bb8ea7f47be9431848ccd534",
+                "summary": "Get all restaurants by name",
+                "description": "Retrieve a list of all restaurants by name",
+                "operationId": "1807bcfa27bd118984c1a562023895bd",
                 "parameters": [
                     {
                         "name": "regione_sociale",
                         "in": "path",
-                        "description": "Name of resturant",
+                        "description": "Name of restaurant",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -805,7 +805,7 @@
         "/api/ristorante/details": {
             "post": {
                 "tags": [
-                    "Resturant"
+                    "restaurant"
                 ],
                 "summary": "Show details of a restaurant by name and address",
                 "description": "Retrieve details of a restaurant by providing its name and address",
@@ -942,7 +942,7 @@
         "/api/ristorante/updatecucina": {
             "post": {
                 "tags": [
-                    "Resturant"
+                    "restaurant"
                 ],
                 "summary": "Update the type of cuisine of a restaurant",
                 "description": "Update the type of cuisine of a restaurant",
@@ -1024,7 +1024,7 @@
         "/api/ristorante/updateaddress": {
             "post": {
                 "tags": [
-                    "Resturant"
+                    "restaurant"
                 ],
                 "summary": "Update the address of a restaurant",
                 "description": "Update the address of a restaurant",
@@ -1106,7 +1106,7 @@
         "/api/ristorante/updatename": {
             "post": {
                 "tags": [
-                    "Resturant"
+                    "restaurant"
                 ],
                 "summary": "Update the regione_sociale of a restaurant",
                 "description": "Update the regione_sociale of a restaurant identified by name and address",
@@ -1188,7 +1188,7 @@
         "/api/ristorante/updateseating": {
             "post": {
                 "tags": [
-                    "Resturant"
+                    "restaurant"
                 ],
                 "summary": "Update the number of seats in a restaurant",
                 "description": "Update the number of seats in a restaurant identified by name and address",

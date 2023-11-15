@@ -259,7 +259,7 @@ class PrenotazioneController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/prenotazione/resturant/reservation",
+     *     path="/api/prenotazione/restaurant/reservation",
      *     summary="Get all reservations of a restaurant",
      *     description="Retrieve details of all reservations made at a specific restaurant",
      *     tags={"Prenotazione"},
@@ -289,7 +289,7 @@ class PrenotazioneController extends Controller
      *     ),
      * )
      */
-    public function getAllReservationOfResturant(Request $request)
+    public function getAllReservationOfRestaurant(Request $request)
     {
         $validator = Validator::make($request->all(), [
             "regione_sociale" => "required|string|max:255",
@@ -301,7 +301,7 @@ class PrenotazioneController extends Controller
             ], 400);
         } else {
             $ristoranti = app()->make(RistoranteController::class);
-            $ristoranteJSON = $ristoranti->getResturantId($request);
+            $ristoranteJSON = $ristoranti->getrestaurantId($request);
             $id_ristorante = json_decode($ristoranteJSON->content(), true);
             $user_and_slot_json = $this->getUserAndSlot($id_ristorante['id_ristorante']);
             $user_and_slot = json_decode($user_and_slot_json->content(), true);
@@ -338,7 +338,7 @@ class PrenotazioneController extends Controller
                     ];
                 }
 
-                $ristorante_json = $ristoranti->getResturantById($id_ristorante['id_ristorante']);
+                $ristorante_json = $ristoranti->getRestaurantById($id_ristorante['id_ristorante']);
                 $ristorante = json_decode($ristorante_json->content(), true);
 
                 return response()->json([

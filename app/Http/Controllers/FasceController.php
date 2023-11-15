@@ -26,7 +26,7 @@ class FasceController extends Controller
         }
     }
 
-    public function getAllSlotOfResturant($id_ristorante)
+    public function getAllSlotOfRestaurant($id_ristorante)
     {
         $data = Fasce::select('inizio', 'fine', 'id_ristorante')->where('id_ristorante', $id_ristorante)->get();
         if ($data->count() == 0) {

@@ -27,9 +27,9 @@ class RistoranteController extends Controller
     /**
      * @OA\Get(
      *     path="/api/ristorante",
-     *     summary="Get all resturants",
-     *     description="Retrieve a list of all resturants",
-     *     tags={"Resturant"},
+     *     summary="Get all restaurants",
+     *     description="Retrieve a list of all restaurants",
+     *     tags={"restaurant"},
      *     @OA\Response(
      *         response=200,
      *         description="Success",
@@ -68,13 +68,13 @@ class RistoranteController extends Controller
     /**
      * @OA\Post(
      *    path="/api/ristorante",
-     *   summary="Create a new resturant",
-     *  description="Create a new resturant",
-     * operationId="createResturant",
-     * tags={"Resturant"},
+     *   summary="Create a new restaurant",
+     *  description="Create a new restaurant",
+     * operationId="createrestaurant",
+     * tags={"restaurant"},
      * @OA\RequestBody(
      *   required=true,
-     * description="Create a new resturant",
+     * description="Create a new restaurant",
      * @OA\JsonContent(
      *  required={"regione_sociale","indirizzo","tipo_cucina","numero_posti","inizio","fine"},
      * @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
@@ -104,7 +104,7 @@ class RistoranteController extends Controller
      * )
      */
     //crea un nuovo ristorante
-    public function NewResturant(Request $request)
+    public function NewRestaurant(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'regione_sociale' => 'required|string|max:255',
@@ -158,11 +158,11 @@ class RistoranteController extends Controller
     /**
      * @OA\Get(
      *    path="/api/ristorante/{regione_sociale}",
-     *    summary="Get all resturants by name",
-     *    description="Retrieve a list of all resturants by name",
-     *   tags={"Resturant"},
+     *    summary="Get all restaurants by name",
+     *    description="Retrieve a list of all restaurants by name",
+     *   tags={"restaurant"},
      * @OA\Parameter(
-     *   description="Name of resturant",
+     *   description="Name of restaurant",
      *  in="path",
      * name="regione_sociale",
      * required=true,
@@ -190,7 +190,7 @@ class RistoranteController extends Controller
      * 
      */
     //mostra tutti i ristoranti con un determinato nome
-    public function showResturantsByName($regione_sociale)
+    public function showRestaurantsByName($regione_sociale)
     {
 
         $ristorante = Ristorante::select('regione_sociale', 'indirizzo', 'tipo_cucina')->where('regione_sociale', $regione_sociale)->get();
@@ -212,7 +212,7 @@ class RistoranteController extends Controller
      *     path="/api/ristorante/details",
      *     summary="Show details of a restaurant by name and address",
      *     description="Retrieve details of a restaurant by providing its name and address",
-     *     tags={"Resturant"},
+     *     tags={"restaurant"},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Restaurant details",
@@ -278,7 +278,7 @@ class RistoranteController extends Controller
                 ->where('regione_sociale', $request->regione_sociale)
                 ->where('indirizzo', $request->indirizzo)->get();
             if ($id_ristorante->count() > 0) {
-                $fasce_ristorante_json = $fasce->getAllSlotOfResturant($id_ristorante[0]['id']);
+                $fasce_ristorante_json = $fasce->getAllSlotOfRestaurant($id_ristorante[0]['id']);
                 $fasce_ristorante = json_decode($fasce_ristorante_json->content(), true);
                 $fasce_orarie = $fasce_ristorante['fasce_orarie'];
                 $ristorante = Ristorante::select('id', 'regione_sociale', 'indirizzo', 'tipo_cucina', 'numero_posti')
@@ -323,7 +323,7 @@ class RistoranteController extends Controller
      *  summary="Update the type of cuisine of a restaurant",
      * description="Update the type of cuisine of a restaurant",
      * operationId="updateCucina",
-     * tags={"Resturant"},
+     * tags={"restaurant"},
      * @OA\RequestBody(
      *  required=true,
      * description="Update the type of cuisine of a restaurant",
@@ -404,7 +404,7 @@ class RistoranteController extends Controller
      *  summary="Update the address of a restaurant",
      * description="Update the address of a restaurant",
      * operationId="updateAddress",
-     * tags={"Resturant"},
+     * tags={"restaurant"},
      * @OA\RequestBody(
      *  required=true,
      * description="Update the address of a restaurant",
@@ -483,7 +483,7 @@ class RistoranteController extends Controller
      *     path="/api/ristorante/updatename",
      *     summary="Update the regione_sociale of a restaurant",
      *     description="Update the regione_sociale of a restaurant identified by name and address",
-     *     tags={"Resturant"},
+     *     tags={"restaurant"},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Restaurant details for update",
@@ -562,7 +562,7 @@ class RistoranteController extends Controller
      *     path="/api/ristorante/updateseating",
      *     summary="Update the number of seats in a restaurant",
      *     description="Update the number of seats in a restaurant identified by name and address",
-     *     tags={"Resturant"},
+     *     tags={"restaurant"},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Restaurant details for update",
@@ -641,7 +641,7 @@ class RistoranteController extends Controller
      *     path="/api/ristorante",
      *     summary="Update restaurant details",
      *     description="Update restaurant details, including name, address, cuisine type, and seating capacity",
-     *     tags={"Resturant"},
+     *     tags={"restaurant"},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Restaurant details for update",
@@ -673,7 +673,7 @@ class RistoranteController extends Controller
      *     ),
      * )
      */
-    public function updateResturant(Request $request)
+    public function updateRestaurant(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'regione_sociale' => 'required|string|max:255',
@@ -717,7 +717,7 @@ class RistoranteController extends Controller
      *     path="/api/ristorante",
      *     summary="Delete restaurant",
      *     description="Delete a restaurant based on the name and address",
-     *     tags={"Resturant"},
+     *     tags={"restaurant"},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Restaurant details for deletion",
@@ -745,7 +745,7 @@ class RistoranteController extends Controller
      *     ),
      * )
      */
-    public function deleteResturant(Request $request)
+    public function deleterestaurant(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'regione_sociale' => 'required|string|max:255',
@@ -795,7 +795,7 @@ class RistoranteController extends Controller
         }
     }
 
-    public function getResturantId(Request $request)
+    public function getrestaurantId(Request $request)
     {
         $validator = Validator::make($request->all(), [
             "regione_sociale" => "required|string|max:255",
@@ -858,7 +858,7 @@ class RistoranteController extends Controller
             }
         }
     }
-    public function getResturantById($id)
+    public function getrestaurantById($id)
     {
         $ristorante = Ristorante::select('regione_sociale', 'indirizzo', 'tipo_cucina', 'numero_posti')->where('id', $id)->get();
         if ($ristorante->count() > 0) {

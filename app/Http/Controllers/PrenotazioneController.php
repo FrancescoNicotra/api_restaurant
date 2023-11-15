@@ -9,6 +9,33 @@ use App\Http\Controllers\RistoranteController;
 use App\Http\Controllers\UtenteController;
 use App\Http\Controllers\FasceController;
 
+/**
+ * @OA\Schema(
+ *     schema="Prenotazione",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="id_utente", type="integer", example="1"),
+ *     @OA\Property(property="id_fascia", type="integer", example="1"),
+ *     @OA\Property(property="id_ristorante", type="integer", example="1"),
+ *     @OA\Property(property="data_prenotazione", type="date", example="2023-11-15"),
+ *     @OA\Property(property="numero_persone", type="integer", example=3),
+ *    @OA\Property(property="created_at", type="date", example="2021-05-15 12:00:00"),
+ *   @OA\Property(property="updated_at", type="date", example="2021-05-15 12:00:00"),
+ * )
+ */
+/**
+ * @OA\Schema(
+ *     schema="PrenotazioneUtente",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="nome", type="string", example="John"),
+ *     @OA\Property(property="cognome", type="string", example="Doe"),
+ *     @OA\Property(property="numero_telefono", type="string", example="123456789"),
+ *     @OA\Property(property="inizio", type="string", example="09:00:00"),
+ *     @OA\Property(property="fine", type="string", example="11:00:00"),
+ *     @OA\Property(property="posti_disponibili", type="integer", example=3),
+ * )
+ */
+
+
 class PrenotazioneController extends Controller
 {
     public function index()
@@ -40,6 +67,61 @@ class PrenotazioneController extends Controller
         }
 
     }
+    /**
+     * @OA\Post(
+     *     path="/api/prenotazione",
+     *     summary="Create a new booking",
+     *     description="Create a new booking for a user at a restaurant within a specified time slot",
+     *     tags={"Prenotazione"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Booking details",
+     *         @OA\JsonContent(
+     *             required={"nome", "cognome", "numero_telefono", "regione_sociale", "indirizzo", "data_prenotazione", "numero_posti", "fascia_prenotazione"},
+     *             @OA\Property(property="nome", type="string", example="John"),
+     *             @OA\Property(property="cognome", type="string", example="Doe"),
+     *             @OA\Property(property="numero_telefono", type="string", example="123456789"),
+     *             @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     *             @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     *             @OA\Property(property="data_prenotazione", type="date", example="2023-11-15"),
+     *             @OA\Property(property="numero_posti", type="integer", example=3),
+     *             @OA\Property(property="fascia_prenotazione", type="string", example="12:00/13:00"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Prenotazione effettuata con successo"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Validation error message or Non esiste questo ristorante"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Errore nella prenotazione or Non ci sono abbastanza posti disponibili"),
+     *         ),
+     *     ),
+     *     @OA\Schema(
+     *         schema="Prenotazione",
+     *         @OA\Property(property="id", type="integer", example=1),
+     *         @OA\Property(property="id_utente", type="integer", example=1),
+     *         @OA\Property(property="id_fascia", type="integer", example=1),
+     *         @OA\Property(property="id_ristorante", type="integer", example=1),
+     *         @OA\Property(property="data_prenotazione", type="date", example="2023-11-15"),
+     *         @OA\Property(property="numero_persone", type="integer", example=3),
+     *         @OA\Property(property="created_at", type="date", example="2021-05-15 12:00:00"),
+     *         @OA\Property(property="updated_at", type="date", example="2021-05-15 12:00:00"),
+     *     )
+     * )
+     */
     public function createNewBooking(Request $request)
     {
         $ristoranti = app()->make(RistoranteController::class);
@@ -174,8 +256,39 @@ class PrenotazioneController extends Controller
         return response()->json([
             'ristorante' => $ristorante
         ], 200);
-
     }
+    /**
+     * @OA\Post(
+     *     path="/api/prenotazione/resturant/reservation",
+     *     summary="Get all reservations of a restaurant",
+     *     description="Retrieve details of all reservations made at a specific restaurant",
+     *     tags={"Prenotazione"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Restaurant details",
+     *         @OA\JsonContent(
+     *             required={"regione_sociale", "indirizzo"},
+     *             @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     *             @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="ristorante", type="object", ref="#/components/schemas/Ristorante"),
+     *             @OA\Property(property="utenti", type="array", @OA\Items(ref="#/components/schemas/PrenotazioneUtente")),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Validation error message"),
+     *         ),
+     *     ),
+     * )
+     */
     public function getAllReservationOfResturant(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -199,36 +312,41 @@ class PrenotazioneController extends Controller
             $ristorante = [];
             $utentiArray = [];
 
-            foreach ($user_and_slot['result'] as $prenotazione) {
-                $user_id = $prenotazione['id_utente'];
-                $slot_id = $prenotazione['id_fascia'];
+            if ($user_and_slot['result'] === "nessuna prenotazione") {
+                return response()->json([
+                    'message' => $user_and_slot['result']
+                ], 404);
+            } else {
+                foreach ($user_and_slot['result'] as $prenotazione) {
+                    $user_id = $prenotazione['id_utente'];
+                    $slot_id = $prenotazione['id_fascia'];
 
-                $utente_json = $utenti->getUtenteById($user_id);
-                $fascia_json = $fasce->getInfoFasciaById($slot_id);
+                    $utente_json = $utenti->getUtenteById($user_id);
+                    $fascia_json = $fasce->getInfoFasciaById($slot_id);
 
-                $utente = json_decode($utente_json->content(), true);
-                $fascia = json_decode($fascia_json->content(), true);
+                    $utente = json_decode($utente_json->content(), true);
+                    $fascia = json_decode($fascia_json->content(), true);
 
-                $utentiArray[] = [
-                    'id' => $utente['utente'][0]['id'],
-                    'nome' => $utente['utente'][0]['nome'],
-                    'cognome' => $utente['utente'][0]['cognome'],
-                    'numero_telefono' => $utente['utente'][0]['numero_chiaro'],
-                    'inizio' => $fascia['fascia'][0]['inizio'],
-                    'fine' => $fascia['fascia'][0]['fine'],
-                    'posti_disponibili' => $fascia['fascia'][0]['posti_disponibili']
-                ];
+                    $utentiArray[] = [
+                        'id' => $utente['utente'][0]['id'],
+                        'nome' => $utente['utente'][0]['nome'],
+                        'cognome' => $utente['utente'][0]['cognome'],
+                        'numero_telefono' => $utente['utente'][0]['numero_chiaro'],
+                        'inizio' => $fascia['fascia'][0]['inizio'],
+                        'fine' => $fascia['fascia'][0]['fine'],
+                        'posti_disponibili' => $fascia['fascia'][0]['posti_disponibili']
+                    ];
+                }
+
+                $ristorante_json = $ristoranti->getResturantById($id_ristorante['id_ristorante']);
+                $ristorante = json_decode($ristorante_json->content(), true);
+
+                return response()->json([
+                    'ristorante' => $ristorante['ristorante'],
+                    'utenti' => $utentiArray
+                ], 200);
+
             }
-
-            $ristorante_json = $ristoranti->getResturantById($id_ristorante['id_ristorante']);
-            $ristorante = json_decode($ristorante_json->content(), true);
-
-            return response()->json([
-                'ristorante' => $ristorante['ristorante'],
-                'utenti' => $utentiArray
-            ], 200);
-
-
         }
     }
 
@@ -245,7 +363,50 @@ class PrenotazioneController extends Controller
             ], 404);
         }
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/prenotazione/user/reservation",
+     *     tags={"Prenotazione"},
+     *     summary="Ottieni tutte le prenotazioni di un utente",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nome", "cognome", "numero_telefono"},
+     *             @OA\Property(property="nome", type="string", example="John"),
+     *             @OA\Property(property="cognome", type="string", example="Doe"),
+     *             @OA\Property(property="numero_telefono", type="string", example="123456789")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Prenotazioni dell'utente ottenute con successo",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="prenotazioni_utente", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id_ristorante", type="integer", example=1),
+     *                     @OA\Property(property="data_prenotazione", type="date", example="2023-11-15"),
+     *                     @OA\Property(property="numero_persone", type="integer", example=3),
+     *                     @OA\Property(property="id_fascia", type="integer", example=1)
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Nessuna prenotazione trovata per l'utente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="result", type="string", example="nessuna prenotazione")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Errore di validazione dei parametri di input",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="object", example={"nome": {"Il campo nome è obbligatorio"}})
+     *         )
+     *     )
+     * )
+     */
     public function getAllReservetionOfUser(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -275,6 +436,51 @@ class PrenotazioneController extends Controller
         }
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/prenotazione",
+     *     tags={"Prenotazione"},
+     *     summary="Cancella una prenotazione",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"id_utente", "id_ristorante", "id_fascia", "data_prenotazione"},
+     *             @OA\Property(property="id_utente", type="integer", example=1),
+     *             @OA\Property(property="id_ristorante", type="integer", example=1),
+     *             @OA\Property(property="id_fascia", type="integer", example=1),
+     *             @OA\Property(property="data_prenotazione", type="date", example="2023-11-15")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Prenotazione cancellata con successo",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Prenotazione cancellata con successo")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Prenotazione non trovata",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Prenotazione non trovata")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="Errore nell'aggiunta dei posti",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Errore nell'aggiunta dei posti")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Errore di validazione dei parametri di input",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="object", example={"id_utente": {"Il campo id_utente è obbligatorio"}})
+     *         )
+     *     )
+     * )
+     */
     public function cancelReservation(Request $request)
     {
         $validator = Validator::make($request->all(), [

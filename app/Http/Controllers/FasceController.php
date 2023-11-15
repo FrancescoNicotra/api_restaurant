@@ -7,14 +7,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\RistoranteController;
 
+
 class FasceController extends Controller
 {
+
     public function index()
     {
-        return response()->json([
-            'status' => 200,
-            'message' => Fasce::all()
-        ], 200);
+        $response = Fasce::all();
+        if ($response->count() == 0) {
+            return response()->json([
+                'message' => 'Non ci sono fasce'
+            ], 404);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => Fasce::all()
+            ], 200);
+        }
     }
 
     public function getAllSlotOfResturant($id_ristorante)
@@ -30,41 +39,35 @@ class FasceController extends Controller
             ]);
         }
     }
-    public function addNewSlot(Request $request)
+
+
+    public function addNewSlot($id_ristorante, $inizio, $fine, $numero_posti)
     {
-        $validator = Validator::make($request->all(), [
-            'inizio' => 'required|date_format:H:i',
-            'fine' => 'required|date_format:H:i|after:inizio',
-            'regione_sociale' => 'required|string|max:255',
-            'indirizzo' => 'required|string|max:255',
-        ]);
-        if ($validator->fails()) {
+
+
+        if (!$id_ristorante) {
             return response()->json([
-                'status' => 400,
-                'message' => $validator->errors()->first(),
-            ], 400);
+                "error" => "Non esiste questo ristorante"
+            ], 404);
         } else {
-            $ristoranti = app()->make(RistoranteController::class);
-            $ristoranteJSON = $ristoranti->showDetails($request); //mostra il ristorante se esiste
-            if (!$ristoranteJSON) {
+
+            $data = Fasce::where("id_ristorante", $id_ristorante)->where("inizio", $inizio)->where("fine", $fine)->get();
+            if ($data->count() > 0) {
                 return response()->json([
-                    "error" => "Non esiste questo ristorante"
+                    "error" => "Fascia già presente per il ristorante"
                 ], 404);
             } else {
 
-                $ristorante = json_decode($ristoranteJSON->content(), true);
-                $numero_posti = $ristorante["ristorante"][0]["numero_posti"];
-                $id_ristorante = $ristorante["ristorante"][0]["id"];
                 $exist_slot = Fasce::select('inizio', 'fine', 'id_ristorante')->where('id_ristorante', $id_ristorante)
-                    ->where('inizio', $request->inizio)->where('fine', $request->fine)->get();
+                    ->where('inizio', $inizio)->where('fine', $fine)->get();
                 if ($exist_slot->count() > 0) {
                     return response()->json([
                         'message' => 'fascia già presente per questo ristorante'
                     ], 404);
                 } else {
                     $fasce = Fasce::create([
-                        'inizio' => $request->inizio,
-                        'fine' => $request->fine,
+                        'inizio' => $inizio,
+                        'fine' => $fine,
                         'id_ristorante' => $id_ristorante,
                         'posti_disponibili' => $numero_posti,
                     ]);
@@ -74,10 +77,11 @@ class FasceController extends Controller
                         'fasce' => $fasce
                     ], 200);
                 }
+
             }
         }
-    }
 
+    }
     public function getAvailableSeats($id_ristorante, $inizio, $fine)
     {
         $posti_disponibili = Fasce::select('posti_disponibili')->where('id_ristorante', $id_ristorante)->where('inizio', $inizio)->where('fine', $fine)->get();
@@ -151,6 +155,22 @@ class FasceController extends Controller
         } else {
             return response()->json([
                 'message' => 'Fascia non trovata'
+            ], 404);
+        }
+    }
+
+    public function deleteSlot($id_ristorante)
+    {
+        $ristorante = Fasce::where('id_ristorante', $id_ristorante)->delete();
+        if ($ristorante) {
+            return response()->json([
+                'eliminato' => true,
+                'message' => 'Fasce cancellate con successo'
+            ], 200);
+        } else {
+            return response()->json([
+                'eliminato' => false,
+                'message' => 'Fasce non trovate'
             ], 404);
         }
     }

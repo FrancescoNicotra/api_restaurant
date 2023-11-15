@@ -10,9 +10,43 @@ use App\Http\Controllers\PrenotazioneController;
 use App\Http\Controllers\FasceController;
 
 
+/**
+ * @OA\Schema(
+ *     schema="Ristorante",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+ *     @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+ *     @OA\Property(property="tipo_cucina", type="string", example="italiana"),
+ *     @OA\Property(property="numero_posti", type="integer", example=200),
+ * )
+ */
+
 class RistoranteController extends Controller
 {
     //mostra tutti i ristoranti
+    /**
+     * @OA\Get(
+     *     path="/api/ristorante",
+     *     summary="Get all resturants",
+     *     description="Retrieve a list of all resturants",
+     *     tags={"Resturant"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="ristoranti", type="array", @OA\Items(ref="#/components/schemas/Ristorante")),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No time slots found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="nessun ristorante trovato"),
+     *         ),
+     *     ),
+     * )
+     */
     public function index()
     {
         $ristoranti = Ristorante::select('regione_sociale', 'indirizzo', 'tipo_cucina')->get();
@@ -31,6 +65,44 @@ class RistoranteController extends Controller
     }
 
 
+    /**
+     * @OA\Post(
+     *    path="/api/ristorante",
+     *   summary="Create a new resturant",
+     *  description="Create a new resturant",
+     * operationId="createResturant",
+     * tags={"Resturant"},
+     * @OA\RequestBody(
+     *   required=true,
+     * description="Create a new resturant",
+     * @OA\JsonContent(
+     *  required={"regione_sociale","indirizzo","tipo_cucina","numero_posti","inizio","fine"},
+     * @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     * @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     * @OA\Property(property="tipo_cucina", type="string", example="italiana"),
+     * @OA\Property(property="numero_posti", type="integer", example=200),
+     * @OA\Property(property="inizio", type="string", format="H:i", example="12:00"),
+     * @OA\Property(property="fine", type="string", format="H:i", example="13:00"),
+     * ),
+     * ),
+     * @OA\Response(
+     *   response=201,
+     *  description="Success",
+     * @OA\JsonContent(
+     * @OA\Property(property="status", type="integer", example=201),
+     * @OA\Property(property="message", type="string", example="ristorante creato con successo"),
+     * ),
+     * ),
+     * @OA\Response(
+     *  response=400,
+     * description="Bad Request",
+     * @OA\JsonContent(
+     * @OA\Property(property="status", type="integer", example=400),
+     * @OA\Property(property="message", type="string", example="dati non validi"),
+     * ),
+     * ),
+     * )
+     */
     //crea un nuovo ristorante
     public function NewResturant(Request $request)
     {
@@ -56,13 +128,23 @@ class RistoranteController extends Controller
                 'tipo_cucina' => $request->tipo_cucina,
                 'numero_posti' => $request->numero_posti,
             ]);
-            $fasce->addNewSlot($request);
-            if (isset($fasce)) {
-                if ($ristorante->count() > 0) {
-                    return response()->json([
-                        "status" => 201,
-                        "message" => "ristorante creato con successo"
-                    ], 201);
+            if (isset($ristorante) && $ristorante->count() > 0) {
+                $id_ristorante = Ristorante::select('id')->where('regione_sociale', $request->regione_sociale)->where('indirizzo', $request->indirizzo)->get();
+                if ($id_ristorante->count() > 0) {
+                    $fasce->addNewSlot($id_ristorante[0]['id'], $request->inizio, $request->fine, $request->numero_posti);
+                    if (isset($fasce)) {
+                        if ($ristorante->count() > 0) {
+                            return response()->json([
+                                "status" => 201,
+                                "message" => "ristorante creato con successo"
+                            ], 201);
+                        } else {
+                            return response()->json([
+                                "status" => 500,
+                                "message" => "errore nella creazione del ristorante"
+                            ], 500);
+                        }
+                    }
                 } else {
                     return response()->json([
                         "status" => 500,
@@ -72,10 +154,46 @@ class RistoranteController extends Controller
             }
         }
     }
+
+    /**
+     * @OA\Get(
+     *    path="/api/ristorante/{regione_sociale}",
+     *    summary="Get all resturants by name",
+     *    description="Retrieve a list of all resturants by name",
+     *   tags={"Resturant"},
+     * @OA\Parameter(
+     *   description="Name of resturant",
+     *  in="path",
+     * name="regione_sociale",
+     * required=true,
+     *  @OA\Schema(
+     * type="string"
+     *  )
+     * ),
+     * @OA\Response(
+     * response=200,
+     * description="Success",
+     * @OA\JsonContent(
+     * @OA\Property(property="status", type="integer", example=200),
+     * @OA\Property(property="ristorante", type="array", @OA\Items(ref="#/components/schemas/Ristorante")),
+     * ),
+     * ),
+     * @OA\Response(
+     * response=404,
+     * description="Not Found",
+     * @OA\JsonContent(
+     * @OA\Property(property="status", type="integer", example=404),
+     * @OA\Property(property="message", type="string", example="nessun ristorante trovato"),
+     * ),
+     * ),
+     * )
+     * 
+     */
     //mostra tutti i ristoranti con un determinato nome
     public function showResturantsByName($regione_sociale)
     {
-        $ristorante = Ristorante::where('regione_sociale', $regione_sociale)->get();
+
+        $ristorante = Ristorante::select('regione_sociale', 'indirizzo', 'tipo_cucina')->where('regione_sociale', $regione_sociale)->get();
         if ($ristorante->count() > 0) {
             return response()->json([
                 "status" => 200,
@@ -86,8 +204,62 @@ class RistoranteController extends Controller
                 "status" => 404,
                 "message" => "nessun ristorante trovato"
             ], 404);
+
         }
     }
+    /**
+     * @OA\Post(
+     *     path="/api/ristorante/details",
+     *     summary="Show details of a restaurant by name and address",
+     *     description="Retrieve details of a restaurant by providing its name and address",
+     *     tags={"Resturant"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Restaurant details",
+     *         @OA\JsonContent(
+     *             required={"regione_sociale", "indirizzo"},
+     *             @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     *             @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="ristorante", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="regione_sociale", type="string"),
+     *                 @OA\Property(property="indirizzo", type="string"),
+     *                 @OA\Property(property="tipo_cucina", type="string"),
+     *                 @OA\Property(property="numero_posti", type="integer"),
+     *             )),
+     *             @OA\Property(property="fasce_disponibili", type="array", @OA\Items(
+     *                 @OA\Property(property="inizio", type="string", format="H:i", example="12:00"),
+     *                 @OA\Property(property="fine", type="string", format="H:i", example="13:00"),
+     *                 @OA\Property(property="posti_disponibili", type="integer"),
+     *             )),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="message", type="string", example="dati non validi"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=404),
+     *             @OA\Property(property="message", type="string", example="nessun ristorante trovato"),
+     *         ),
+     *     ),
+     * )
+     */
+
     //mostra un ristorante con un determinato nome e un determinato indirizzo
     public function showDetails(Request $request)
     {
@@ -108,12 +280,8 @@ class RistoranteController extends Controller
             if ($id_ristorante->count() > 0) {
                 $fasce_ristorante_json = $fasce->getAllSlotOfResturant($id_ristorante[0]['id']);
                 $fasce_ristorante = json_decode($fasce_ristorante_json->content(), true);
-
                 $fasce_orarie = $fasce_ristorante['fasce_orarie'];
-
-                //$fascia_prenotazione = explode('/', $request->fascia_prenotazione);
                 $ristorante = Ristorante::select('id', 'regione_sociale', 'indirizzo', 'tipo_cucina', 'numero_posti')
-                    //->selectRaw('numero_posti - posti_prenotati AS posti_disponibili')
                     ->where('regione_sociale', Str::lower($request->regione_sociale))
                     ->where('indirizzo', Str::lower($request->indirizzo))
                     ->get();
@@ -149,6 +317,41 @@ class RistoranteController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *    path="/api/ristorante/updatecucina",
+     *  summary="Update the type of cuisine of a restaurant",
+     * description="Update the type of cuisine of a restaurant",
+     * operationId="updateCucina",
+     * tags={"Resturant"},
+     * @OA\RequestBody(
+     *  required=true,
+     * description="Update the type of cuisine of a restaurant",
+     * @OA\JsonContent(
+     * required={"regione_sociale","indirizzo","tipo_cucina"},
+     * @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     * @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     * @OA\Property(property="tipo_cucina", type="string", example="italiana"),
+     * ),
+     * ),
+     * @OA\Response(
+     * response=201,
+     * description="Success",
+     * @OA\JsonContent(
+     * @OA\Property(property="status", type="integer", example=201),
+     * @OA\Property(property="message", type="string", example="Il tipo di cucina è stato aggiornato"),
+     * ),
+     * ),
+     * @OA\Response(
+     * response=400,
+     * description="Bad Request",
+     * @OA\JsonContent(
+     * @OA\Property(property="status", type="integer", example=400),
+     * @OA\Property(property="message", type="string", example="tipo cucina non valido"),
+     * ),
+     * ),
+     * )
+     */
     //funzione per aggiornare SOLO il tipo di cucina
     public function updateCucina(Request $request)
     {
@@ -195,7 +398,41 @@ class RistoranteController extends Controller
 
         }
     }
-
+    /**
+     * @OA\Post(
+     *    path="/api/ristorante/updateaddress",
+     *  summary="Update the address of a restaurant",
+     * description="Update the address of a restaurant",
+     * operationId="updateAddress",
+     * tags={"Resturant"},
+     * @OA\RequestBody(
+     *  required=true,
+     * description="Update the address of a restaurant",
+     * @OA\JsonContent(
+     * required={"regione_sociale","indirizzo","tipo_cucina"},
+     * @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     * @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     * @OA\Property(property="indirizzo_nuovo", type="string", example="via roma 2"),
+     * ),
+     * ),
+     * @OA\Response(
+     * response=201,
+     * description="Success",
+     * @OA\JsonContent(
+     * @OA\Property(property="status", type="integer", example=201),
+     * @OA\Property(property="message", type="string", example="L'indirizzo è stato aggiornato"),
+     * ),
+     * ),
+     * @OA\Response(
+     * response=400,
+     * description="Bad Request",
+     * @OA\JsonContent(
+     * @OA\Property(property="status", type="integer", example=400),
+     * @OA\Property(property="message", type="string", example="Indirizzo non valido"),
+     * ),
+     * ),
+     * )
+     */
     //funzione per aggiornare solo l'indirizzo
     public function updateIndirizzo(Request $request)
     {
@@ -241,7 +478,40 @@ class RistoranteController extends Controller
             }
         }
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/ristorante/updatename",
+     *     summary="Update the regione_sociale of a restaurant",
+     *     description="Update the regione_sociale of a restaurant identified by name and address",
+     *     tags={"Resturant"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Restaurant details for update",
+     *         @OA\JsonContent(
+     *             required={"regione_sociale", "indirizzo", "regione_sociale_nuova"},
+     *             @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     *             @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     *             @OA\Property(property="regione_sociale_nuova", type="string", example="new_ristorante1"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="La regione sociale è stata aggiornata"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="message", type="string", example="Validation error message or Non è stato possibile aggiornare la regione sociale"),
+     *         ),
+     *     ),
+     * )
+     */
     public function updateRegioneSociale(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -287,6 +557,40 @@ class RistoranteController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/ristorante/updateseating",
+     *     summary="Update the number of seats in a restaurant",
+     *     description="Update the number of seats in a restaurant identified by name and address",
+     *     tags={"Resturant"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Restaurant details for update",
+     *         @OA\JsonContent(
+     *             required={"regione_sociale", "indirizzo", "numero_posti"},
+     *             @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     *             @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     *             @OA\Property(property="numero_posti", type="integer", example=50),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Il numero di posti è stato aggiornato"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="message", type="string", example="Validation error message or Non è stato possibile aggiornare il numero di posti"),
+     *         ),
+     *     ),
+     * )
+     */
 
     public function updateNumeroPosti(Request $request)
     {
@@ -332,6 +636,43 @@ class RistoranteController extends Controller
             }
         }
     }
+    /**
+     * @OA\Put(
+     *     path="/api/ristorante",
+     *     summary="Update restaurant details",
+     *     description="Update restaurant details, including name, address, cuisine type, and seating capacity",
+     *     tags={"Resturant"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Restaurant details for update",
+     *         @OA\JsonContent(
+     *             required={"regione_sociale", "indirizzo", "indirizzo_nuovo", "regione_sociale_nuova", "tipo_cucina", "numero_posti"},
+     *             @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     *             @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     *             @OA\Property(property="indirizzo_nuovo", type="string", example="via nuova 2"),
+     *             @OA\Property(property="regione_sociale_nuova", type="string", example="ristorante_modificato"),
+     *             @OA\Property(property="tipo_cucina", type="string", example="italiana"),
+     *             @OA\Property(property="numero_posti", type="integer", example=50),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Dati del ristorante aggiornati con successo"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="message", type="string", example="Validation error message or Non è stato possibile aggiornare i dati del ristorante"),
+     *         ),
+     *     ),
+     * )
+     */
     public function updateResturant(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -371,7 +712,39 @@ class RistoranteController extends Controller
             ], 400);
         }
     }
-
+    /**
+     * @OA\Delete(
+     *     path="/api/ristorante",
+     *     summary="Delete restaurant",
+     *     description="Delete a restaurant based on the name and address",
+     *     tags={"Resturant"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Restaurant details for deletion",
+     *         @OA\JsonContent(
+     *             required={"regione_sociale", "indirizzo"},
+     *             @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     *             @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Ristorante eliminato con successo"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="message", type="string", example="Validation error message or Non è stato possibile eliminare il ristorante"),
+     *         ),
+     *     ),
+     * )
+     */
     public function deleteResturant(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -386,18 +759,37 @@ class RistoranteController extends Controller
             ], 400);
         }
 
-        $ristorante = Ristorante::where('regione_sociale', $request->regione_sociale)
-            ->where('indirizzo', $request->indirizzo)
-            ->delete();
+        $fasce = app()->make(FasceController::class);
+        $id_ristorante = Ristorante::select('id')->where('regione_sociale', $request->regione_sociale)
+            ->where('indirizzo', $request->indirizzo)->get();
 
-        if ($ristorante !== false) {
-            return response()->json([
-                'status' => 200,
-                'message' => 'Ristorante eliminato con successo',
-            ]);
+        if ($id_ristorante !== false) {
+            $fascia_json = $fasce->deleteSlot($id_ristorante[0]->id);
+            $fascia = json_decode($fascia_json->content(), true);
+
+            if ($fascia['eliminato'] === true) {
+                $ristorante = Ristorante::where('regione_sociale', $request->regione_sociale)
+                    ->where('indirizzo', $request->indirizzo)
+                    ->delete();
+
+                if ($ristorante !== false) {
+                    return response()->json([
+                        'status' => 200,
+                        'message' => 'Ristorante eliminato con successo',
+                    ]);
+                } else {
+                    return response()->json([
+
+                        'message' => 'Non è stato possibile eliminare il ristorante',
+                    ], 400);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Non è stato possibile eliminare il ristorante',
+                ], 400);
+            }
         } else {
             return response()->json([
-
                 'message' => 'Non è stato possibile eliminare il ristorante',
             ], 400);
         }
@@ -429,48 +821,46 @@ class RistoranteController extends Controller
         }
     }
     public function showDetailsBook(Request $request)
-    { {
-            $prenotazioni = app()->make(PrenotazioneController::class);
-            $validator = Validator::make($request->all(), [
-                "regione_sociale" => "required | string | max:255",
-                "indirizzo" => "required | string | max:255",
-                "fascia_prenotazione" => "required | string | max:255",
-            ]);
-            if ($validator->fails()) {
+    {
+
+        $validator = Validator::make($request->all(), [
+            "regione_sociale" => "required | string | max:255",
+            "indirizzo" => "required | string | max:255",
+            "fascia_prenotazione" => "required | string | max:255",
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                "status" => 400,
+                "message" => $validator->errors()->first(),
+            ], 400);
+        } else {
+            $fasce = app()->make(FasceController::class);
+            $fascia_prenotazione = explode('/', $request->fascia_prenotazione);
+            $ristorante = Ristorante::select('id', 'regione_sociale', 'indirizzo', 'tipo_cucina', 'numero_posti')
+                //->selectRaw('numero_posti - posti_prenotati AS posti_disponibili')
+                ->where('regione_sociale', Str::lower($request->regione_sociale))
+                ->where('indirizzo', Str::lower($request->indirizzo))
+                ->get();
+            if ($ristorante->count() == 0) {
                 return response()->json([
-                    "status" => 400,
-                    "message" => $validator->errors()->first(),
-                ], 400);
+                    "status" => 404,
+                    "message" => "nessun ristorante trovato"
+                ], 404);
             } else {
-                $fasce = app()->make(FasceController::class);
-                $fascia_prenotazione = explode('/', $request->fascia_prenotazione);
-                $ristorante = Ristorante::select('id', 'regione_sociale', 'indirizzo', 'tipo_cucina', 'numero_posti')
-                    //->selectRaw('numero_posti - posti_prenotati AS posti_disponibili')
-                    ->where('regione_sociale', Str::lower($request->regione_sociale))
-                    ->where('indirizzo', Str::lower($request->indirizzo))
-                    ->get();
-                if ($ristorante->count() == 0) {
-                    return response()->json([
-                        "status" => 404,
-                        "message" => "nessun ristorante trovato"
-                    ], 404);
-                } else {
-                    $posti_disponibiliJSON = $fasce->getAvailableSeats($ristorante[0]["id"], $fascia_prenotazione[0], $fascia_prenotazione[1]);
-                    $posti_disponibili = json_decode($posti_disponibiliJSON->content(), true);
-                    return response()->json([
-                        "status" => 200,
-                        "ristorante" => $ristorante,
-                        "posti_disponibili" => $posti_disponibili["posti_disponibili"][0]['posti_disponibili'],
-                        "message" => "nessuna prenotazione effettuata"
-                    ], 200);
-                }
+                $posti_disponibiliJSON = $fasce->getAvailableSeats($ristorante[0]["id"], $fascia_prenotazione[0], $fascia_prenotazione[1]);
+                $posti_disponibili = json_decode($posti_disponibiliJSON->content(), true);
+                return response()->json([
+                    "status" => 200,
+                    "ristorante" => $ristorante,
+                    "posti_disponibili" => $posti_disponibili["posti_disponibili"][0]['posti_disponibili'],
+                    "message" => "nessuna prenotazione effettuata"
+                ], 200);
             }
         }
-
     }
     public function getResturantById($id)
     {
-        $ristorante = Ristorante::select('regione_sociale', 'indirizzo', 'tipo_cucina')->where('id', $id)->get();
+        $ristorante = Ristorante::select('regione_sociale', 'indirizzo', 'tipo_cucina', 'numero_posti')->where('id', $id)->get();
         if ($ristorante->count() > 0) {
             return response()->json([
                 'ristorante' => $ristorante

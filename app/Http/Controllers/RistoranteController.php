@@ -26,7 +26,7 @@ class RistoranteController extends Controller
     //mostra tutti i ristoranti
     /**
      * @OA\Get(
-     *     path="/api/ristorante",
+     *     path="/api/restaurant",
      *     summary="Get all restaurants",
      *     description="Retrieve a list of all restaurants",
      *     tags={"restaurant"},
@@ -67,7 +67,7 @@ class RistoranteController extends Controller
 
     /**
      * @OA\Post(
-     *    path="/api/ristorante",
+     *    path="/api/restaurant",
      *   summary="Create a new restaurant",
      *  description="Create a new restaurant",
      * operationId="createrestaurant",
@@ -157,7 +157,7 @@ class RistoranteController extends Controller
 
     /**
      * @OA\Get(
-     *    path="/api/ristorante/{regione_sociale}",
+     *    path="/api/restaurant/{social_region}",
      *    summary="Get all restaurants by name",
      *    description="Retrieve a list of all restaurants by name",
      *   tags={"restaurant"},
@@ -209,7 +209,7 @@ class RistoranteController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/ristorante/details",
+     *     path="/api/restaurant/details",
      *     summary="Show details of a restaurant by name and address",
      *     description="Retrieve details of a restaurant by providing its name and address",
      *     tags={"restaurant"},
@@ -319,7 +319,7 @@ class RistoranteController extends Controller
 
     /**
      * @OA\Post(
-     *    path="/api/ristorante/updatecucina",
+     *    path="/api/restaurant/updatecucina",
      *  summary="Update the type of cuisine of a restaurant",
      * description="Update the type of cuisine of a restaurant",
      * operationId="updateCucina",
@@ -400,7 +400,7 @@ class RistoranteController extends Controller
     }
     /**
      * @OA\Post(
-     *    path="/api/ristorante/updateaddress",
+     *    path="/api/restaurant/updateaddress",
      *  summary="Update the address of a restaurant",
      * description="Update the address of a restaurant",
      * operationId="updateAddress",
@@ -480,7 +480,7 @@ class RistoranteController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/ristorante/updatename",
+     *     path="/api/restaurant/updatename",
      *     summary="Update the regione_sociale of a restaurant",
      *     description="Update the regione_sociale of a restaurant identified by name and address",
      *     tags={"restaurant"},
@@ -559,7 +559,7 @@ class RistoranteController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/ristorante/updateseating",
+     *     path="/api/restaurant/updateseating",
      *     summary="Update the number of seats in a restaurant",
      *     description="Update the number of seats in a restaurant identified by name and address",
      *     tags={"restaurant"},
@@ -638,7 +638,7 @@ class RistoranteController extends Controller
     }
     /**
      * @OA\Put(
-     *     path="/api/ristorante",
+     *     path="/api/restaurant",
      *     summary="Update restaurant details",
      *     description="Update restaurant details, including name, address, cuisine type, and seating capacity",
      *     tags={"restaurant"},
@@ -714,7 +714,7 @@ class RistoranteController extends Controller
     }
     /**
      * @OA\Delete(
-     *     path="/api/ristorante",
+     *     path="/api/restaurant",
      *     summary="Delete restaurant",
      *     description="Delete a restaurant based on the name and address",
      *     tags={"restaurant"},

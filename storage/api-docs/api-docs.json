@@ -5,14 +5,14 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/prenotazione": {
+        "/api/reservation": {
             "post": {
                 "tags": [
-                    "Prenotazione"
+                    "reservation"
                 ],
                 "summary": "Create a new booking",
                 "description": "Create a new booking for a user at a restaurant within a specified time slot",
-                "operationId": "981123a6ef604f90f10fc8c6ee2252aa",
+                "operationId": "738e2bdf8bc8f232a949e3bee7b985dc",
                 "requestBody": {
                     "description": "Booking details",
                     "required": true,
@@ -122,10 +122,10 @@
             },
             "delete": {
                 "tags": [
-                    "Prenotazione"
+                    "reservation"
                 ],
                 "summary": "Cancella una prenotazione",
-                "operationId": "8c904d4b0f8a147beab23cb02e7d603f",
+                "operationId": "3e3051bb32e04de667be53dfab4fb0da",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -233,14 +233,14 @@
                 }
             }
         },
-        "/api/prenotazione/restaurant/reservation": {
+        "/api/reservation/restaurant/allreservation": {
             "post": {
                 "tags": [
-                    "Prenotazione"
+                    "reservation"
                 ],
                 "summary": "Get all reservations of a restaurant",
                 "description": "Retrieve details of all reservations made at a specific restaurant",
-                "operationId": "8094b65b96524bd5ce5eb13ada6c2275",
+                "operationId": "cda2043397b2dd8687efd47898117a3b",
                 "requestBody": {
                     "description": "Restaurant details",
                     "required": true,
@@ -279,7 +279,7 @@
                                         "utenti": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/PrenotazioneUtente"
+                                                "$ref": "#/components/schemas/reservationUser"
                                             }
                                         }
                                     },
@@ -307,13 +307,13 @@
                 }
             }
         },
-        "/api/prenotazione/user/reservation": {
+        "/api/reservation/user/reservation": {
             "post": {
                 "tags": [
-                    "Prenotazione"
+                    "reservation"
                 ],
                 "summary": "Ottieni tutte le prenotazioni di un utente",
-                "operationId": "a5d12f2d2c833967281c56f826f30788",
+                "operationId": "66cb78a889b742678cb9d7422dc87bde",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -420,14 +420,14 @@
                 }
             }
         },
-        "/api/ristorante": {
+        "/api/restaurant": {
             "get": {
                 "tags": [
                     "restaurant"
                 ],
                 "summary": "Get all restaurants",
                 "description": "Retrieve a list of all restaurants",
-                "operationId": "fd563b4904835dcd5949197e64af7ef9",
+                "operationId": "1bf078c80b0b24f13afb93ac2cca7ef2",
                 "responses": {
                     "200": {
                         "description": "Success",
@@ -475,7 +475,7 @@
                 ],
                 "summary": "Update restaurant details",
                 "description": "Update restaurant details, including name, address, cuisine type, and seating capacity",
-                "operationId": "fbfc1263bb073b054f84fc7f0dacb2fa",
+                "operationId": "d6b81fa014ce102fd6c89ea45403b2c5",
                 "requestBody": {
                     "description": "Restaurant details for update",
                     "required": true,
@@ -667,7 +667,7 @@
                 ],
                 "summary": "Delete restaurant",
                 "description": "Delete a restaurant based on the name and address",
-                "operationId": "7446f0f5bc5d395662f48932853cded3",
+                "operationId": "47c6d5d499d3f2c800fbd8e2a77846e9",
                 "requestBody": {
                     "description": "Restaurant details for deletion",
                     "required": true,
@@ -737,14 +737,14 @@
                 }
             }
         },
-        "/api/ristorante/{regione_sociale}": {
+        "/api/restaurant/{social_region}": {
             "get": {
                 "tags": [
                     "restaurant"
                 ],
                 "summary": "Get all restaurants by name",
                 "description": "Retrieve a list of all restaurants by name",
-                "operationId": "1807bcfa27bd118984c1a562023895bd",
+                "operationId": "e072cf431b635069ed228ee9a26e160a",
                 "parameters": [
                     {
                         "name": "regione_sociale",
@@ -802,14 +802,14 @@
                 }
             }
         },
-        "/api/ristorante/details": {
+        "/api/restaurant/details": {
             "post": {
                 "tags": [
                     "restaurant"
                 ],
                 "summary": "Show details of a restaurant by name and address",
                 "description": "Retrieve details of a restaurant by providing its name and address",
-                "operationId": "b49fef170cfbfae7de7dfe4a41787926",
+                "operationId": "df52e01729a69ca4e075d67bce5d3ef1",
                 "requestBody": {
                     "description": "Restaurant details",
                     "required": true,
@@ -939,7 +939,7 @@
                 }
             }
         },
-        "/api/ristorante/updatecucina": {
+        "/api/restaurant/updatecucina": {
             "post": {
                 "tags": [
                     "restaurant"
@@ -1021,7 +1021,7 @@
                 }
             }
         },
-        "/api/ristorante/updateaddress": {
+        "/api/restaurant/updateaddress": {
             "post": {
                 "tags": [
                     "restaurant"
@@ -1103,14 +1103,14 @@
                 }
             }
         },
-        "/api/ristorante/updatename": {
+        "/api/restaurant/updatename": {
             "post": {
                 "tags": [
                     "restaurant"
                 ],
                 "summary": "Update the regione_sociale of a restaurant",
                 "description": "Update the regione_sociale of a restaurant identified by name and address",
-                "operationId": "274bea478dd8eabfa1a52d2e22e7cbf5",
+                "operationId": "af81f009629a7c28fdb20152df7b1dae",
                 "requestBody": {
                     "description": "Restaurant details for update",
                     "required": true,
@@ -1185,14 +1185,14 @@
                 }
             }
         },
-        "/api/ristorante/updateseating": {
+        "/api/restaurant/updateseating": {
             "post": {
                 "tags": [
                     "restaurant"
                 ],
                 "summary": "Update the number of seats in a restaurant",
                 "description": "Update the number of seats in a restaurant identified by name and address",
-                "operationId": "4779311c524a123cd035e6f57504f0a2",
+                "operationId": "b9847060a7006cd9d94716b583bbb741",
                 "requestBody": {
                     "description": "Restaurant details for update",
                     "required": true,
@@ -1270,7 +1270,7 @@
     },
     "components": {
         "schemas": {
-            "PrenotazioneUtente": {
+            "reservationUser": {
                 "properties": {
                     "id": {
                         "type": "integer",

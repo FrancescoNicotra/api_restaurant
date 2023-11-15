@@ -11,7 +11,7 @@ use App\Http\Controllers\FasceController;
 
 /**
  * @OA\Schema(
- *     schema="Prenotazione",
+ *     schema="reservation",
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="id_utente", type="integer", example="1"),
  *     @OA\Property(property="id_fascia", type="integer", example="1"),
@@ -24,7 +24,7 @@ use App\Http\Controllers\FasceController;
  */
 /**
  * @OA\Schema(
- *     schema="PrenotazioneUtente",
+ *     schema="reservationUser",
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="nome", type="string", example="John"),
  *     @OA\Property(property="cognome", type="string", example="Doe"),
@@ -69,10 +69,10 @@ class PrenotazioneController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/prenotazione",
+     *     path="/api/reservation",
      *     summary="Create a new booking",
      *     description="Create a new booking for a user at a restaurant within a specified time slot",
-     *     tags={"Prenotazione"},
+     *     tags={"reservation"},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Booking details",
@@ -110,7 +110,7 @@ class PrenotazioneController extends Controller
      *         ),
      *     ),
      *     @OA\Schema(
-     *         schema="Prenotazione",
+     *         schema="reservation",
      *         @OA\Property(property="id", type="integer", example=1),
      *         @OA\Property(property="id_utente", type="integer", example=1),
      *         @OA\Property(property="id_fascia", type="integer", example=1),
@@ -259,10 +259,10 @@ class PrenotazioneController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/prenotazione/restaurant/reservation",
+     *     path="/api/reservation/restaurant/allreservation",
      *     summary="Get all reservations of a restaurant",
      *     description="Retrieve details of all reservations made at a specific restaurant",
-     *     tags={"Prenotazione"},
+     *     tags={"reservation"},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Restaurant details",
@@ -277,7 +277,7 @@ class PrenotazioneController extends Controller
      *         description="Success",
      *         @OA\JsonContent(
      *             @OA\Property(property="ristorante", type="object", ref="#/components/schemas/Ristorante"),
-     *             @OA\Property(property="utenti", type="array", @OA\Items(ref="#/components/schemas/PrenotazioneUtente")),
+     *             @OA\Property(property="utenti", type="array", @OA\Items(ref="#/components/schemas/reservationUser")),
      *         ),
      *     ),
      *     @OA\Response(
@@ -365,8 +365,8 @@ class PrenotazioneController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/prenotazione/user/reservation",
-     *     tags={"Prenotazione"},
+     *     path="/api/reservation/user/reservation",
+     *     tags={"reservation"},
      *     summary="Ottieni tutte le prenotazioni di un utente",
      *     @OA\RequestBody(
      *         required=true,
@@ -438,8 +438,8 @@ class PrenotazioneController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/prenotazione",
-     *     tags={"Prenotazione"},
+     *     path="/api/reservation",
+     *     tags={"reservation"},
      *     summary="Cancella una prenotazione",
      *     @OA\RequestBody(
      *         required=true,

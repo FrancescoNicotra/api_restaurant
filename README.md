@@ -9,11 +9,7 @@ It's a Laravel application where two Docker containers are used for MySQL and ph
 
 # Usage
 
-1. Open http://localhost:8080 in your browser
-2. Try with postman or any other tool to send a POST request with a JSON body like this:
+Run yout laravel application on `localhost:8000` and phpMyAdmin on `localhost:8080`
 
-```
-{
-    "url": "https://www.google.com"
-}
-```
+Now, if you go to the following link, you will see the documentation of the created API.
+[API Documentation](http://127.0.0.1:8000/api/documentation#/)

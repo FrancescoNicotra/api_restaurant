@@ -1266,6 +1266,115 @@
                     }
                 }
             }
+        },
+        "/api/restaurant/addslots": {
+            "post": {
+                "tags": [
+                    "restaurant"
+                ],
+                "summary": "add new slot in a restaurant",
+                "description": "add new slot in a restaurant identified by name and address",
+                "operationId": "8dc299ff2f2ec7523ec64218a7e629ba",
+                "requestBody": {
+                    "description": "Restaurant details for add new slot",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "regione_sociale",
+                                    "indirizzo",
+                                    "inizio",
+                                    "fine"
+                                ],
+                                "properties": {
+                                    "regione_sociale": {
+                                        "type": "string",
+                                        "example": "ristorante1"
+                                    },
+                                    "indirizzo": {
+                                        "type": "string",
+                                        "example": "via roma 1"
+                                    },
+                                    "inizio": {
+                                        "type": "string",
+                                        "format": "H:i",
+                                        "example": "12:00"
+                                    },
+                                    "fine": {
+                                        "type": "string",
+                                        "format": "H:i",
+                                        "example": "13:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fascia aggiunta con successo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ristorante non trovato"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "dati non validi o fascia già presente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {

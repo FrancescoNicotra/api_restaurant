@@ -794,6 +794,86 @@ class RistoranteController extends Controller
             ], 400);
         }
     }
+    /**
+     * @OA\Post(
+     *     path="/api/restaurant/addslots",
+     *     summary="add new slot in a restaurant",
+     *     description="add new slot in a restaurant identified by name and address",
+     *     tags={"restaurant"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Restaurant details for add new slot",
+     *         @OA\JsonContent(
+     *             required={"regione_sociale", "indirizzo", "inizio","fine"},
+     *             @OA\Property(property="regione_sociale", type="string", example="ristorante1"),
+     *             @OA\Property(property="indirizzo", type="string", example="via roma 1"),
+     *              @OA\Property(property="inizio", type="string", format="H:i", example="12:00"),
+     *              @OA\Property(property="fine", type="string", format="H:i", example="13:00"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Fascia aggiunta con successo"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="message", type="string", example="Ristorante non trovato"),
+     *         ),
+     *     ),
+     * @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="message", type="string", example="dati non validi o fascia già presente"),
+     *         ),
+     *     ),
+     * )
+     */
+    public function addNewSlot(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "regione_sociale" => "required | string | max:255",
+            "indirizzo" => "required | string | max:255",
+            "inizio" => "required | date_format:H:i",
+            "fine" => "required | date_format:H:i| after:inizio",
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                "status" => 400,
+                "message" => $validator->errors()->first(),
+            ], 400);
+        } else {
+            $ristorante = Ristorante::select("id", "numero_posti")->where("regione_sociale", $request->regione_sociale)->where("indirizzo", $request->indirizzo)->get();
+            if ($ristorante->count() == 0) {
+                return response()->json([
+                    "status" => 404,
+                    "message" => "Ristorante non trovato",
+                ], 404);
+            } else {
+                $fasce = app()->make(FasceController::class);
+                $fascia_json = $fasce->addNewSlot($ristorante[0]['id'], $request->inizio, $request->fine, $ristorante[0]['numero_posti']);
+                $fascia = json_decode($fascia_json->content(), true);
+                if (isset($fascia['error'])) {
+                    return response()->json([
+                        "message" => $fascia['error']
+                    ], 400);
+                } else {
+                    return response()->json([
+                        "status" => 200,
+                        "message" => "Fascia aggiunta con successo",
+                    ], 200);
+                }
+            }
+        }
+    }
 
     public function getrestaurantId(Request $request)
     {

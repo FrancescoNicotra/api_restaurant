@@ -18,6 +18,7 @@ Route::post('restaurant/updatecucina', [RistoranteController::class, 'updateCuci
 Route::post('restaurant/updateaddress', [RistoranteController::class, 'updateIndirizzo']);
 Route::post('restaurant/updatename', [RistoranteController::class, 'updateRegioneSociale']);
 Route::post('restaurant/updateseating', [RistoranteController::class, 'updateNumeroPosti']);
+Route::post('restaurant/addslots', [RistoranteController::class, 'addNewSlot']);
 Route::put('restaurant', [RistoranteController::class, 'updateRestaurant']);
 Route::delete('restaurant', [RistoranteController::class, 'deleteRestaurant']);
 Route::post('reservation', [PrenotazioneController::class, 'createNewBooking']);
